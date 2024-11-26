@@ -19,6 +19,7 @@ const nameRegex = /^[A-Za-z\s-]+$/;
 
 const appointmentSchema = z.object({
   profile: z.object({
+    companyName: z.string().min(1, 'Company name is required'),
     firstName: z.string()
       .min(1, 'First name is required')
       .regex(nameRegex, 'First name can only contain letters'),
@@ -28,7 +29,6 @@ const appointmentSchema = z.object({
     email: z.string().email('Invalid email address'),
     phone: z.string()
       .regex(phoneRegex, 'Phone must be in format: 123-123-1234'),
-    companyName: z.string().min(1, 'Company name is required'),
     address: z.string().min(1, 'Address is required'),
     city: z.string()
       .min(1, 'City is required')
@@ -65,11 +65,11 @@ const AppointmentSetup = () => {
     defaultValues: {
       appointmentTypes: [{ name: '', duration: 30, price: 0 }],
       profile: {
+        companyName: '',
         firstName: '',
         lastName: '',
         email: '',
         phone: '',
-        companyName: '',
         address: '',
         city: '',
         state: '',
@@ -109,15 +109,38 @@ const AppointmentSetup = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <div>
-        <h3 className="text-lg font-medium text-gray-900">Business Profile</h3>
-        <div className="mt-4 grid grid-cols-1 gap-4">
-          <div className="grid grid-cols-2 gap-4">
+        <h3 className="text-lg font-medium text-gray-900 mb-6">Business Profile</h3>
+        
+        {/* Company Information Section */}
+        <div className="bg-gray-50 p-6 rounded-lg mb-8">
+          <h4 className="text-sm font-medium text-gray-700 mb-4">Company Information</h4>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Company Name</label>
+              <input
+                type="text"
+                {...register('profile.companyName')}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                placeholder="Enter your company name"
+              />
+              {errors.profile?.companyName && (
+                <p className="mt-1 text-sm text-red-600">{errors.profile.companyName.message}</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Personal Information Section */}
+        <div className="bg-gray-50 p-6 rounded-lg mb-8">
+          <h4 className="text-sm font-medium text-gray-700 mb-4">Personal Information</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700">First Name</label>
               <input
                 type="text"
                 {...register('profile.firstName')}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                placeholder="Enter your first name"
               />
               {errors.profile?.firstName && (
                 <p className="mt-1 text-sm text-red-600">{errors.profile.firstName.message}</p>
@@ -129,32 +152,26 @@ const AppointmentSetup = () => {
                 type="text"
                 {...register('profile.lastName')}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                placeholder="Enter your last name"
               />
               {errors.profile?.lastName && (
                 <p className="mt-1 text-sm text-red-600">{errors.profile.lastName.message}</p>
               )}
             </div>
           </div>
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Company Name</label>
-            <input
-              type="text"
-              {...register('profile.companyName')}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-            />
-            {errors.profile?.companyName && (
-              <p className="mt-1 text-sm text-red-600">{errors.profile.companyName.message}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
+        {/* Contact Information Section */}
+        <div className="bg-gray-50 p-6 rounded-lg mb-8">
+          <h4 className="text-sm font-medium text-gray-700 mb-4">Contact Information</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700">Email</label>
               <input
                 type="email"
                 {...register('profile.email')}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                placeholder="you@example.com"
               />
               {errors.profile?.email && (
                 <p className="mt-1 text-sm text-red-600">{errors.profile.email.message}</p>
@@ -166,7 +183,7 @@ const AppointmentSetup = () => {
                 type="tel"
                 {...register('profile.phone')}
                 onChange={handlePhoneChange}
-                placeholder="123-123-1234"
+                placeholder="123-456-7890"
                 maxLength={12}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               />
@@ -175,90 +192,101 @@ const AppointmentSetup = () => {
               )}
             </div>
           </div>
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Address</label>
-            <input
-              type="text"
-              {...register('profile.address')}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-            />
-            {errors.profile?.address && (
-              <p className="mt-1 text-sm text-red-600">{errors.profile.address.message}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
+        {/* Address Section */}
+        <div className="bg-gray-50 p-6 rounded-lg">
+          <h4 className="text-sm font-medium text-gray-700 mb-4">Business Address</h4>
+          <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700">City</label>
+              <label className="block text-sm font-medium text-gray-700">Street Address</label>
               <input
                 type="text"
-                {...register('profile.city')}
+                {...register('profile.address')}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                placeholder="Enter your street address"
               />
-              {errors.profile?.city && (
-                <p className="mt-1 text-sm text-red-600">{errors.profile.city.message}</p>
+              {errors.profile?.address && (
+                <p className="mt-1 text-sm text-red-600">{errors.profile.address.message}</p>
               )}
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">State</label>
-              <select
-                {...register('profile.state')}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              >
-                <option value="">Select State</option>
-                {US_STATES.map(state => (
-                  <option key={state} value={state}>{state}</option>
-                ))}
-              </select>
-              {errors.profile?.state && (
-                <p className="mt-1 text-sm text-red-600">{errors.profile.state.message}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">ZIP Code</label>
-              <input
-                type="text"
-                {...register('profile.zipCode')}
-                maxLength={5}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                onKeyPress={(e) => {
-                  if (!/[0-9]/.test(e.key)) {
-                    e.preventDefault();
-                  }
-                }}
-              />
-              {errors.profile?.zipCode && (
-                <p className="mt-1 text-sm text-red-600">{errors.profile.zipCode.message}</p>
-              )}
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="col-span-2 md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700">City</label>
+                <input
+                  type="text"
+                  {...register('profile.city')}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  placeholder="Enter your city"
+                />
+                {errors.profile?.city && (
+                  <p className="mt-1 text-sm text-red-600">{errors.profile.city.message}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">State</label>
+                <select
+                  {...register('profile.state')}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                >
+                  <option value="">Select</option>
+                  {US_STATES.map(state => (
+                    <option key={state} value={state}>{state}</option>
+                  ))}
+                </select>
+                {errors.profile?.state && (
+                  <p className="mt-1 text-sm text-red-600">{errors.profile.state.message}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">ZIP Code</label>
+                <input
+                  type="text"
+                  {...register('profile.zipCode')}
+                  maxLength={5}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  placeholder="12345"
+                  onKeyPress={(e) => {
+                    if (!/[0-9]/.test(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                />
+                {errors.profile?.zipCode && (
+                  <p className="mt-1 text-sm text-red-600">{errors.profile.zipCode.message}</p>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div>
+      {/* Services Section */}
+      <div className="bg-gray-50 p-6 rounded-lg">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium text-gray-900">Appointment Types</h3>
+          <h3 className="text-lg font-medium text-gray-900">Services Offered</h3>
           <button
             type="button"
             onClick={() => append({ name: '', duration: 30, price: 0 })}
             className="flex items-center gap-2 px-3 py-2 text-sm text-indigo-600 hover:text-indigo-700"
           >
             <Plus className="w-4 h-4" />
-            Add Type
+            Add Service
           </button>
         </div>
 
         <div className="space-y-4">
           {fields.map((field, index) => (
-            <div key={field.id} className="flex gap-4 items-start bg-gray-50 p-4 rounded-lg">
+            <div key={field.id} className="flex gap-4 items-start bg-white p-4 rounded-lg shadow-sm">
               <div className="flex-1 grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Name</label>
+                  <label className="block text-sm font-medium text-gray-700">Service Name</label>
                   <input
                     type="text"
                     {...register(`appointmentTypes.${index}.name`)}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    placeholder="e.g., Consultation"
                   />
                 </div>
                 <div>
@@ -267,6 +295,7 @@ const AppointmentSetup = () => {
                     type="number"
                     {...register(`appointmentTypes.${index}.duration`, { valueAsNumber: true })}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    placeholder="30"
                   />
                 </div>
                 <div>
@@ -275,6 +304,7 @@ const AppointmentSetup = () => {
                     type="number"
                     {...register(`appointmentTypes.${index}.price`, { valueAsNumber: true })}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    placeholder="0"
                   />
                 </div>
               </div>
